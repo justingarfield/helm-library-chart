@@ -1,0 +1,4 @@
+metadata:
+  name: unit-test-fixture
+probes:
+{{- include "helmLibraryChart.controller.probes" . | nindent 2 }}

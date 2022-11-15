@@ -1,0 +1,52 @@
+suite: "chart -> names -> name"
+templates:
+  - lib/chart/names-name.yaml
+tests:
+  - it: should return the Chart Name by default
+    asserts:
+      - equal:
+          path: name
+          value: helm-library-chart-unit-tests
+
+  - it: should return the value of a global nameOverride if supplied
+    set:
+      global:
+        nameOverride: globalChartNameOverride
+    asserts:
+      - equal:
+          path: name
+          value: globalChartNameOverride
+
+  - it: should return the value of nameOverride if supplied
+    set:
+      nameOverride: chartNameOverride
+    asserts:
+      - equal:
+          path: name
+          value: chartNameOverride
+
+  - it: should return the value of a global nameOverride if supplied along with nameOverride
+    set:
+      nameOverride: chartNameOverride
+      global:
+        nameOverride: globalChartNameOverride
+    asserts:
+      - equal:
+          path: name
+          value: globalChartNameOverride
+
+  - it: should truncate the return value to 63 characters
+    set:
+      nameOverride: 1234567980_abcdefghijklmnopqrstuvwxyz_1234567980_abcdefghijklmnopqrstuvwxyz
+    asserts:
+      - equal:
+          path: name
+          value: 1234567980_abcdefghijklmnopqrstuvwxyz_1234567980_abcdefghijklmn
+
+  - it: should trim the first occurence of a '-' suffix from the return value
+    set:
+      nameOverride: unitTestNameWithHyphenSuffix-
+    asserts:
+      - equal:
+          path: name
+          value: unitTestNameWithHyphenSuffix

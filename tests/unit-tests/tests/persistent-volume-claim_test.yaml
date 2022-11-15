@@ -1,0 +1,4 @@
+suite: persistent-volume-claim
+templates:
+  - persistent-volume-claim.yaml
+tests:

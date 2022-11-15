@@ -1,0 +1,4 @@
+suite: "sidecar -> vpn"
+templates:
+  - sidecars/vpn/vpn.yaml
+tests:

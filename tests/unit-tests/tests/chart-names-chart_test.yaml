@@ -1,0 +1,33 @@
+suite: "chart -> names -> chart"
+templates:
+  - lib/chart/names-chart.yaml
+tests:
+  - it: should return the Chart Name and Version separated by a '-'
+    asserts:
+      - equal:
+          path: chartName
+          value: helm-library-chart-unit-tests-0.1.0
+
+  - it: should replace any '+' characters in the return value with '_'
+    chart:
+      version: 1.0.0+abcdef
+    asserts:
+      - equal:
+          path: chartName
+          value: helm-library-chart-unit-tests-1.0.0_abcdef
+
+  - it: should truncate the return value to 63 characters
+    chart:
+      version: 1234567980_abcdefghijklmnopqrstuvwxyz_1234567980_abcdefghijklmnopqrstuvwxyz
+    asserts:
+      - equal:
+          path: chartName
+          value: helm-library-chart-unit-tests-1234567980_abcdefghijklmnopqrstuv
+
+  - it: should trim the first occurence of a '-' suffix from the return value
+    chart:
+      version: 1.0.0-
+    asserts:
+      - equal:
+          path: chartName
+          value: helm-library-chart-unit-tests-1.0.0

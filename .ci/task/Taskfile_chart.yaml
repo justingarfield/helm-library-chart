@@ -1,0 +1,9 @@
+---
+version: '3'
+
+tasks:
+  lint:
+    desc: Run 'helm lint' against the library chart
+    dir: "{{.GIT_ROOT}}"
+    cmds:
+    - helm lint

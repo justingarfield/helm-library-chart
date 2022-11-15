@@ -1,0 +1,4 @@
+metadata:
+  name: unit-test-fixture
+ports:
+{{- include "helmLibraryChart.controller.ports" . | nindent 2 }}

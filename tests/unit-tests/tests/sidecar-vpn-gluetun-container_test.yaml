@@ -1,0 +1,4 @@
+suite: "sidecar -> vpn -> gluetun -> container"
+templates:
+  - sidecars/vpn/gluetun/container.yaml
+tests:

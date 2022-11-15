@@ -1,0 +1,52 @@
+suite: service -> primary
+templates:
+  - services.yaml
+tests:
+  - it: should render the main service by default
+    asserts:
+      - equal:
+          path: primaryService
+          value: main
+
+  - it: should default to being primary if only service enabled
+    set:
+      service:
+        main:
+          enabled: false
+        anotherService:
+          enabled: true
+    asserts:
+      - equal:
+          path: primaryService
+          value: anotherService
+
+  - it: should pick whichever service is marked as primary
+    set:
+      service:
+        main:
+          primary: false
+        anotherService:
+          enabled: true
+        yetAnotherService:
+          enabled: true
+          primary: true
+    asserts:
+      - equal:
+          path: primaryService
+          value: yetAnotherService
+
+  - it: should pick the first enabled service (ordered by name) when none are specified as primary
+    set:
+      service:
+        main:
+          enabled: false
+        yetAnotherService:
+          enabled: true
+          primary: false
+        anotherService:
+          enabled: true
+          primary: false
+    asserts:
+      - equal:
+          path: primaryService
+          value: anotherService

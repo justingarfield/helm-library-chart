@@ -1,0 +1,14 @@
+apiVersion: v2
+name: helm-library-chart
+description: A Helm library chart for Kubernetes
+type: library
+kubeVersion: ">=1.25.0-0"
+keywords:
+  - helm
+  - library
+home: https://github.com/justingarfield/helm-library-chart/tree/main
+icon: https://helm.sh/img/helm.svg
+maintainers:
+  - name: Justin Garfield
+    email: github@jgarfield.com
+version: 0.1.0

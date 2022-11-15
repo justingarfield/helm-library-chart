@@ -1,0 +1,11 @@
+suite: "chart -> labels -> selectorLabels"
+templates:
+  - lib/chart/labels-selectorLabels.yaml
+tests:
+  - it: should render the default selectorLabels
+    asserts:
+      - equal:
+          path: selectorLabels
+          value:
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/name: helm-library-chart-unit-tests

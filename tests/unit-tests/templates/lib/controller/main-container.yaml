@@ -1,0 +1,4 @@
+metadata:
+  name: unit-test-fixture
+containers:
+{{- include "helmLibraryChart.controller.mainContainer" . | nindent 2 }}

@@ -1,0 +1,24 @@
+suite: configMaps
+templates:
+  - configmaps.yaml
+tests:
+  - it: should create a ConfigMap for every entry
+    set:
+      global:
+        labels: {}
+        annotations: {}
+    asserts:
+
+  - it: should only create enabled ConfigMap entries
+    set:
+      global:
+        labels: {}
+        annotations: {}
+    asserts:
+
+  - it: should support nameOverride
+    set:
+      global:
+        labels: {}
+        annotations: {}
+    asserts:

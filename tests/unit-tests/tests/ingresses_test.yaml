@@ -1,0 +1,4 @@
+suite: ingresses
+templates:
+  - ingresses.yaml
+tests:

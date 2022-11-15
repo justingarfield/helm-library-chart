@@ -1,0 +1,6 @@
+suite: controller -> probes
+templates:
+  - lib/controller/probes.yaml
+tests:
+  - it: should
+    asserts:

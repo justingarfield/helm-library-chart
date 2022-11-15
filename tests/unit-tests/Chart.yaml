@@ -1,0 +1,9 @@
+apiVersion: v2
+name: helm-library-chart-unit-tests
+description: Chart to test each of the components from the helm-library-chart library chart as isolated units.
+version: 0.1.0
+dependencies:
+- name: helm-library-chart
+  repository: file://../../
+  version: 0.1.0
+icon: https://helm.sh/img/helm.svg

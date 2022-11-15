@@ -1,0 +1,20 @@
+metadata:
+  name: unit-test-fixture
+
+{{- include "helmLibraryChart.values.setup" . }}
+
+{{- define "unitTest.harcodedValues" -}}
+service:
+  metrics:
+    enabled: true
+    ports:
+      metrics:
+        enabled: true
+        protocol: TCP
+{{- end -}}
+{{- $_ := mergeOverwrite .Values (include "unitTest.harcodedValues" . | fromYaml) -}}
+
+{{- include "helmLibraryChart.values.setup" . }}
+
+values:
+  {{- .Values | toYaml | nindent 2 }}

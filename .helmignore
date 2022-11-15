@@ -1,0 +1,8 @@
+.ci/
+.git
+.github/
+.vscode/
+tests/
+.gitignore
+.helmignore
+Taskfile.yaml

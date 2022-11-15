@@ -1,0 +1,112 @@
+name: "Charts: Lint and test"
+
+on:
+  workflow_dispatch:
+    branches:
+      - 'main'
+    paths:
+    - '.github/workflows/lint-test.yaml'
+    - 'templates/**'
+    - 'tests/**'
+  pull_request:
+  push:
+    branches:
+      - 'main'
+    paths:
+    - '.github/workflows/lint-test.yaml'
+    - 'templates/**'
+    - 'tests/**'
+
+jobs:
+  lint:
+    name: Lint charts
+    runs-on: ubuntu-22.04
+    outputs:
+      changed: ${{ steps.list-changed.outputs.changed }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Install Helm
+      uses: azure/setup-helm@v3
+      with:
+        version: v3.10.0
+
+    - uses: actions/setup-python@v4
+      with:
+        python-version: 3.9
+        check-latest: true
+
+    - name: Set up chart-testing
+      uses: helm/chart-testing-action@v2.3.1
+
+    - name: Run chart-testing (list-changed)
+      id: list-changed
+      run: |
+        changed=$(ct list-changed --config ct.yaml)
+        if [[ -n "$changed" ]]; then
+          echo "ct_list_changed=true" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Run chart-testing (lint)
+      id: lint
+      if: env.ct_list_changed == 'true'
+      run: ct lint --config ct.yaml
+
+  unittest:
+    needs:
+    - lint
+    name: Run unit tests
+    runs-on: ubuntu-22.04
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Install Helm
+      uses: azure/setup-helm@v3
+      with:
+        version: v3.10.0
+
+    - name: Run tests
+      run: |
+        helm plugin install https://github.com/quintush/helm-unittest --version v0.2.9
+        helm unittest -f "tests/**/*_test.yaml" .
+
+  install:
+    needs:
+    - lint
+    name: Install charts
+    runs-on: ubuntu-22.04
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Install Helm
+      uses: azure/setup-helm@v3
+      with:
+        version: v3.10.0
+
+    - uses: actions/setup-python@v4
+      with:
+        python-version: 3.9
+        check-latest: true
+
+    - name: Set up chart-testing
+      uses: helm/chart-testing-action@v2.3.1
+
+    - name: Create k3d cluster
+      uses: nolar/setup-k3d-k3s@v1
+      with:
+        version: v1.25
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+      if: needs.lint.outputs.changed == 'true'
+
+    - name: Run chart-testing (install)
+      run: ct install --config .github/ct-install.yaml
+      if: needs.lint.outputs.changed == 'true'

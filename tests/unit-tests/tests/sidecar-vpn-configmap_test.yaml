@@ -1,0 +1,4 @@
+suite: "sidecar -> vpn -> configmap"
+templates:
+  - sidecars/vpn/configmap.yaml
+tests:

@@ -1,0 +1,4 @@
+suite: service
+templates:
+  - service.yaml
+tests:

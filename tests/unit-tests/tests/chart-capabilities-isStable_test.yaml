@@ -1,0 +1,21 @@
+suite: "chart -> capabilities -> isStable"
+templates:
+  - lib/chart/capabilities-isStable.yaml
+tests:
+  - it: should return true when apiVersion is 'networking.k8s.io/v1'
+    capabilities:
+      majorVersion: 1
+      minorVersion: 19
+    asserts:
+      - equal:
+          path: isStable
+          value: true
+
+  - it: should return false when apiVersion is not 'networking.k8s.io/v1'
+    capabilities:
+      majorVersion: 1
+      minorVersion: 18
+    asserts:
+      - equal:
+          path: isStable
+          value: false

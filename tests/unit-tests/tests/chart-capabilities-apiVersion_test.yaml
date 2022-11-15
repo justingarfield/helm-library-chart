@@ -1,0 +1,37 @@
+suite: "chart -> capabilities -> apiVersion"
+templates:
+  - lib/chart/capabilities-apiVersion.yaml
+tests:
+  - it: should render apiVersion 'networking.k8s.io/v1' when kubeVersion >= 1.19
+    capabilities:
+      majorVersion: 1
+      minorVersion: 19
+    asserts:
+      - equal:
+          path: apiVersion
+          value: "networking.k8s.io/v1"
+
+  - it: should render apiVersion 'networking.k8s.io/v1beta1' when kubeVersion < 1.19
+    capabilities:
+      majorVersion: 1
+      minorVersion: 18
+    asserts:
+      - equal:
+          path: apiVersion
+          value: "networking.k8s.io/v1beta1"
+
+  - it: should render apiVersion 'networking.k8s.io/v1' when kubeVersionOverride >= 1.19
+    set:
+      kubeVersionOverride: "1.19"
+    asserts:
+      - equal:
+          path: apiVersion
+          value: "networking.k8s.io/v1"
+
+  - it: should render apiVersion 'networking.k8s.io/v1beta1' when kubeVersionOverride < 1.19
+    set:
+      kubeVersionOverride: "1.18"
+    asserts:
+      - equal:
+          path: apiVersion
+          value: "networking.k8s.io/v1beta1"

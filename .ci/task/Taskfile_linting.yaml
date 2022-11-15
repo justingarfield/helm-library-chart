@@ -1,0 +1,31 @@
+---
+version: '3'
+
+tasks:
+  all:
+    desc: run 'helm lint' on all charts
+    cmds:
+    - task: root
+    - task: unit-tests
+    - task: integration-tests
+
+  root:
+    desc: run 'helm lint' on the root chart
+    dir: "{{.GIT_ROOT}}"
+    cmds:
+    - helm dependency update
+    - helm lint --strict
+
+  unit-tests:
+    desc: run 'helm lint' on the unit tests chart
+    dir: "{{.GIT_ROOT}}/tests/unit-tests"
+    cmds:
+    - helm dependency update
+    - helm lint --strict
+
+  integration-tests:
+    desc: run 'helm lint' on the integration tests chart
+    dir: "{{.GIT_ROOT}}/tests/integration-tests"
+    cmds:
+    - helm dependency update
+    - helm lint --strict

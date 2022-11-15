@@ -1,0 +1,6 @@
+dependencies:
+- name: helm-library-chart
+  repository: file://../../
+  version: 0.1.0
+digest: sha256:8f1e8a3be7cc2ac6b513755ecdd96f00c0b3e1968442f00eb2e293d0b5e346fa
+generated: "2022-10-29T11:09:04.105020215-04:00"

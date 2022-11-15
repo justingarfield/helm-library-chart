@@ -1,0 +1,27 @@
+suite: "sidecar -> netshoot"
+templates:
+  - sidecars/netshoot/sidecar.yaml
+tests:
+  - it: should default to not enabling the sidecar
+    asserts:
+      - isEmpty:
+          path: additionalContainers
+
+  - it: should not add an entry to additionalContainers when explicitly disabled
+    set:
+      sidecars:
+        netshoot:
+          enabled: false
+    asserts:
+      - isEmpty:
+          path: additionalContainers
+
+  - it: should add an entry to additionalContainers when enabled
+    set:
+      sidecars:
+        netshoot:
+          enabled: true
+    asserts:
+      - equal:
+          path: additionalContainers[0].name
+          value: netshoot

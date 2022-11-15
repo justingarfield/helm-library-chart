@@ -1,0 +1,13 @@
+# Developer dependencies
+.bin
+
+tests/*/Chart.lock
+tests/unit-tests/charts/
+tests/*/__snapshot__/
+
+# Other resources
+.env
+.envrc
+Gemfile.lock
+
+.cr-release-packages

@@ -1,0 +1,7 @@
+# TODO: Still trying to figure out how I want to test this functionality in-full
+suite: "chart -> values"
+templates:
+  - lib/chart/values.yaml
+tests:
+  - it: should
+    asserts:

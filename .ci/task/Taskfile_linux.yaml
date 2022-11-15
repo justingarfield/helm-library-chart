@@ -1,0 +1,13 @@
+---
+version: '3'
+
+env:
+  URL_GOREPLACE: https://github.com/webdevops/go-replace/releases/download/1.1.2/gr-64-linux
+  URL_HELM: https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+
+tasks:
+  need:
+    desc: Check needed binary is present
+    cmds:
+    - type {{.BIN}} 2>&1 >/dev/null || (echo "Please install {{.BIN}}"; exit 1)
+    silent: true

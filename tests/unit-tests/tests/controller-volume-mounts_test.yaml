@@ -1,0 +1,4 @@
+suite: controller -> volume mounts
+templates:
+  - controller-volume-mounts.yaml
+tests:

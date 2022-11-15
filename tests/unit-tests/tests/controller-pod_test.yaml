@@ -1,0 +1,404 @@
+suite: controller -> pod
+templates:
+  - lib/controller/pod.yaml
+tests:
+  - it: should not render imagePullSecrets when empty
+    asserts:
+      - isEmpty:
+          path: pod.imagePullSecrets
+
+  - it: should render imagePullSecrets when provided
+    set:
+      imagePullSecrets:
+        - name: myregistrykey
+    asserts:
+      - equal:
+          path: pod.imagePullSecrets
+          value:
+            - name: myregistrykey
+
+  - it: should default to a serviceAccountName of 'default'
+    asserts:
+      - equal:
+          path: pod.serviceAccountName
+          value: default
+
+  - it: should default to a automountServiceAccountToken of true
+    asserts:
+      - equal:
+          path: pod.automountServiceAccountToken
+          value: true
+
+  - it: should not render securityContext when podSecurityContext is empty
+    asserts:
+      - isEmpty:
+          path: pod.securityContext
+
+  - it: should render securityContext when podSecurityContext is provided
+    set:
+      podSecurityContext:
+        runAsUser: 2000
+        allowPrivilegeEscalation: false
+    asserts:
+      - equal:
+          path: pod.securityContext
+          value:
+            runAsUser: 2000
+            allowPrivilegeEscalation: false
+
+  - it: should not render priorityClassName when empty
+    asserts:
+      - isEmpty:
+          path: pod.priorityClassName
+
+  - it: should render priorityClassName when provided
+    set:
+      priorityClassName: system-node-critical
+    asserts:
+      - equal:
+          path: pod.priorityClassName
+          value: system-node-critical
+
+  - it: should not render runtimeClassName when empty
+    asserts:
+      - isEmpty:
+          path: pod.runtimeClassName
+
+  - it: should render runtimeClassName when provided
+    set:
+      runtimeClassName: nvidia
+    asserts:
+      - equal:
+          path: pod.runtimeClassName
+          value: nvidia
+
+  - it: should not render schedulerName when empty
+    asserts:
+      - isNull:
+          path: pod.schedulerName
+
+  - it: should render schedulerName when provided
+    set:
+      schedulerName: unit-test-scheduler
+    asserts:
+      - equal:
+          path: pod.schedulerName
+          value: unit-test-scheduler
+
+  - it: should not render hostNetwork when false
+    asserts:
+      - isNull:
+          path: pod.hostNetwork
+
+  - it: should render hostNetwork when provided
+    set:
+      hostNetwork: true
+    asserts:
+      - equal:
+          path: pod.hostNetwork
+          value: true
+
+  - it: should not render hostname when false
+    asserts:
+      - isNull:
+          path: pod.hostname
+
+  - it: should render hostname when provided
+    set:
+      hostname: unit-test-hostname
+    asserts:
+      - equal:
+          path: pod.hostname
+          value: unit-test-hostname
+
+  - it: should render a dnsPolicy of ClusterFirst by default
+    asserts:
+      - equal:
+          path: pod.dnsPolicy
+          value: ClusterFirst
+
+  - it: should render a dnsPolicy of ClusterFirstWithHostNet when using hostNetworking
+    set:
+      hostNetwork: true
+    asserts:
+      - equal:
+          path: pod.dnsPolicy
+          value: ClusterFirstWithHostNet
+
+  - it: should render a user-supplied dnsPolicy when provided
+    set:
+      dnsPolicy: unit-test-dns-policy
+    asserts:
+      - equal:
+          path: pod.dnsPolicy
+          value: unit-test-dns-policy
+
+  - it: should render a user-supplied dnsPolicy when provided and hostNetwork is true
+    set:
+      dnsPolicy: unit-test-dns-policy
+      hostNetwork: true
+    asserts:
+      - equal:
+          path: pod.dnsPolicy
+          value: unit-test-dns-policy
+
+  - it: should not render dnsConfig when empty
+    asserts:
+      - isNull:
+          path: pod.dnsConfig
+
+  - it: should render dnsConfig when provided
+    set:
+      dnsConfig:
+        some:
+          dns: config
+    asserts:
+      - equal:
+          path: pod.dnsConfig
+          value:
+            some:
+              dns: config
+
+  - it: should enableServiceLinks by default
+    asserts:
+      - equal:
+          path: pod.enableServiceLinks
+          value: true
+
+  - it: should allow enableServiceLinks to be disabled
+    set:
+      enableServiceLinks: false
+    asserts:
+      - equal:
+          path: pod.enableServiceLinks
+          value: false
+
+  - it: should not render terminationGracePeriodSeconds when empty
+    asserts:
+      - isNull:
+          path: pod.terminationGracePeriodSeconds
+
+  - it: should use termination.gracePeriodSeconds value when supplised for terminationGracePeriodSeconds
+    set:
+      termination:
+        gracePeriodSeconds: 10
+    asserts:
+      - equal:
+          path: pod.terminationGracePeriodSeconds
+          value: 10
+
+  - it: should not render initContainers when empty
+    asserts:
+      - isNull:
+          path: pod.initContainers
+
+  - it: should render initContainers when provided
+    set:
+      initContainers:
+        clear-wiki:
+          image: alpine
+    asserts:
+      - equal:
+          path: pod.initContainers
+          value:
+            - image: alpine
+              name: clear-wiki
+
+  - it: should use the key as the name for any initContainers where the name is not supplied
+    set:
+      initContainers:
+        unit-test-key-a:
+          image: alpine
+        unit-test-key-b:
+          image: ubuntu
+    asserts:
+      - equal:
+          path: pod.initContainers
+          value:
+            - image: alpine
+              name: unit-test-key-a
+            - image: ubuntu
+              name: unit-test-key-b
+
+  - it: should use the provided name as the name for any initContainers when supplied
+    set:
+      initContainers:
+        unit-test-key-a:
+          name: custom-name-a
+          image: alpine
+        unit-test-key-b:
+          image: ubuntu
+        unit-test-key-c:
+          name: custom-name-c
+          image: busybox
+    asserts:
+      - equal:
+          path: pod.initContainers
+          value:
+            - image: alpine
+              name: custom-name-a
+            - image: ubuntu
+              name: unit-test-key-b
+            - image: busybox
+              name: custom-name-c
+
+  - it: should sort multiple initContainers by key
+    set:
+      initContainers:
+        unit-test-key-c:
+          name: custom-name-c
+          image: busybox
+        unit-test-key-a:
+          name: custom-name-a
+          image: alpine
+        unit-test-key-b:
+          image: ubuntu
+        unit-test-key-d:
+          name: aaaaaa
+          image: freebsd
+    asserts:
+      - equal:
+          path: pod.initContainers
+          value:
+            - image: alpine
+              name: custom-name-a
+            - image: ubuntu
+              name: unit-test-key-b
+            - image: busybox
+              name: custom-name-c
+            - image: freebsd
+              name: aaaaaa
+
+  # Note: See controller-environment-variables_test.yaml for more usages of environment variables
+  - it: should render environment variables when provided
+    set:
+      initContainers:
+        containerA:
+          env:
+            ENV_VAR_A: unit-test
+    asserts:
+      - equal:
+          path: pod.initContainers[0].env
+          value:
+            - name: ENV_VAR_A
+              value: unit-test
+
+  #- it: should only render a single container by default
+  #  asserts:
+  #    - equal:
+  #        path: pod.containers
+  #        value:
+
+  # TODO: volumes tests
+
+  - it: should not render hostAliases when empty
+    asserts:
+      - isNull:
+          path: pod.hostAliases
+
+  - it: should render hostAliases when provided
+    set:
+      hostAliases:
+        - ip: "192.168.1.100"
+          hostnames:
+          - "example.com"
+          - "www.example.com"
+    asserts:
+      - equal:
+          path: pod.hostAliases
+          value:
+            - hostnames:
+              - example.com
+              - www.example.com
+              ip: 192.168.1.100
+
+  - it: should not render nodeSelector when empty
+    asserts:
+      - isNull:
+          path: pod.nodeSelector
+
+  - it: should render nodeSelector when provided
+    set:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: topology.kubernetes.io/zone
+                operator: In
+                values:
+                - antarctica-east1
+                - antarctica-west1
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+              matchExpressions:
+              - key: another-node-label-key
+                operator: In
+                values:
+                - another-node-label-value
+    asserts:
+      - equal:
+          path: pod.affinity
+          value:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                - matchExpressions:
+                  - key: topology.kubernetes.io/zone
+                    operator: In
+                    values:
+                    - antarctica-east1
+                    - antarctica-west1
+              preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 1
+                preference:
+                  matchExpressions:
+                  - key: another-node-label-key
+                    operator: In
+                    values:
+                    - another-node-label-value
+
+  - it: should not render topologySpreadConstraints when empty
+    asserts:
+      - isNull:
+          path: pod.topologySpreadConstraints
+
+  - it: should render topologySpreadConstraints when provided
+    set:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          matchLabelKeys:
+            - app
+            - pod-template-hash
+    asserts:
+      - equal:
+          path: pod.topologySpreadConstraints
+          value:
+            - maxSkew: 1
+              topologyKey: kubernetes.io/hostname
+              whenUnsatisfiable: DoNotSchedule
+              matchLabelKeys:
+                - app
+                - pod-template-hash
+
+  - it: should not render tolerations when empty
+    asserts:
+      - isNull:
+          path: pod.tolerations
+
+  - it: should render tolerations when provided
+    set:
+      tolerations:
+        - key: "example-key"
+          operator: "Exists"
+          effect: "NoSchedule"
+    asserts:
+      - equal:
+          path: pod.tolerations
+          value:
+            - key: "example-key"
+              operator: "Exists"
+              effect: "NoSchedule"

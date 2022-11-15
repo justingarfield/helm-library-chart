@@ -1,0 +1,4 @@
+metadata:
+  name: unit-test-fixture
+annotations:
+  {{- include "helmLibraryChart.podAnnotations" . | nindent 2 }}

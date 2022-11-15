@@ -1,0 +1,4 @@
+suite: service-ports
+templates:
+  - service-ports.yaml
+tests:

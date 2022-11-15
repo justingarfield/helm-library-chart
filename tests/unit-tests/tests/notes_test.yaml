@@ -1,0 +1,4 @@
+suite: notes
+templates:
+  - notes.yaml
+tests:

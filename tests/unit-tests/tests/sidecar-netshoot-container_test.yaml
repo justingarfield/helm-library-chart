@@ -1,0 +1,144 @@
+suite: "sidecar -> netshoot -> container"
+templates:
+  - sidecars/netshoot/container.yaml
+tests:
+  - it: should have a name of "netshoot"
+    asserts:
+      - equal:
+          path: container.name
+          value: netshoot
+
+  - it: should default to an imageRepository of "ghcr.io/nicolaka/netshoot"
+    asserts:
+      - equal:
+          path: container.image
+          value: ghcr.io/nicolaka/netshoot:v0.7
+
+  - it: should respect any user-defined image repository
+    set:
+      sidecars:
+        netshoot:
+          image:
+            repository: helm-library-chart-unit-test
+    asserts:
+      - equal:
+          path: container.image
+          value: helm-library-chart-unit-test:v0.7
+
+  - it: should default to a tag of "v0.7"
+    asserts:
+      - equal:
+          path: container.image
+          value: ghcr.io/nicolaka/netshoot:v0.7
+
+  - it: should respect any user-defined image tag
+    set:
+      sidecars:
+        netshoot:
+          image:
+            tag: vUnitTest
+    asserts:
+      - equal:
+          path: container.image
+          value: ghcr.io/nicolaka/netshoot:vUnitTest
+
+  - it: should default a pullPolicy of "IfNotPresent"
+    asserts:
+      - equal:
+          path: container.imagePullPolicy
+          value: IfNotPresent
+
+  - it: should default to only having NET_ADMIN added as a securityContext capability
+    asserts:
+      - equal:
+          path: container.securityContext
+          value:
+            capabilities:
+              add:
+                - NET_ADMIN
+
+  - it: should default to having no environment variables defined
+    asserts:
+      - isEmpty:
+          path: container.env
+
+  - it: should respect any user-defined environment variables
+    set:
+      sidecars:
+        netshoot:
+          env:
+            varA: "false"
+            varB: "123"
+            varC: "abc"
+    asserts:
+      - equal:
+          path: container.env
+          value:
+            - name: varA
+              value: "false"
+            - name: varB
+              value: "123"
+            - name: varC
+              value: "abc"
+
+  - it: should wrap any non-string user-defined environment variables in quotes
+    set:
+      sidecars:
+        netshoot:
+          env:
+            varA: false
+            varB: 123
+            varC: abc
+    asserts:
+      - equal:
+          path: container.env
+          value:
+            - name: varA
+              value: "false"
+            - name: varB
+              value: "123"
+            - name: varC
+              value: "abc"
+      - notEqual:
+          path: container.env
+          value:
+            - name: varA
+              value: false
+            - name: varB
+              value: 123
+
+  - it: should be using "/bin/sh -c sleep infinity" as the entry command
+    asserts:
+      - equal:
+          path: container.command
+          value:
+            - /bin/sh
+            - -c
+            - sleep infinity
+
+  - it: should default to having no resources defined
+    asserts:
+      - isEmpty:
+          path: container.resources
+
+  - it: should respect any user-defined resources
+    set:
+      sidecars:
+        netshoot:
+          resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+    asserts:
+      - equal:
+          path: container.resources
+          value:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi

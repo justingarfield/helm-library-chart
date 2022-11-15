@@ -1,0 +1,4 @@
+suite: "sidecar -> vpn -> networkpolicy"
+templates:
+  - sidecars/vpn/networkpolicy.yaml
+tests:

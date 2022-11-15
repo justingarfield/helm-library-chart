@@ -1,0 +1,199 @@
+suite: controller -> environment variables
+templates:
+  - lib/controller/env-vars.yaml
+tests:
+  - it: should default to no env vars
+    asserts:
+      - isNull:
+          path: envVars
+
+  - it: should use the regular 'env' dictionary if provided
+    set:
+      env:
+        int: 1
+        float: 1.5
+        string: value_of_env
+        template: "{{ .Release.Name }}-unit-test"
+    asserts:
+      - equal:
+          path: envVars
+          value:
+            env:
+            - name: float
+              value: "1.5"
+            - name: int
+              value: "1"
+            - name: string
+              value: value_of_env
+            - name: template
+              value: RELEASE-NAME-unit-test
+
+  - it: should use the root-level 'ObjectValues' dictionary if provided
+    set:
+      UnitTestObjectValues:
+        env:
+          int: 1
+          float: 1.5
+          string: value_of_env
+          template: "{{ .Release.Name }}-unit-test"
+    asserts:
+      - equal:
+          path: envVars
+          value:
+            env:
+            - name: float
+              value: "1.5"
+            - name: int
+              value: "1"
+            - name: string
+              value: value_of_env
+            - name: template
+              value: RELEASE-NAME-unit-test
+
+  - it: should override regular 'env' with the root-level 'ObjectValues' dictionary if provided
+    set:
+      UnitTestObjectValues:
+        env:
+          int: 1
+          float: 1.5
+          string: value_of_env
+          template: "{{ .Release.Name }}-unit-test"
+      env:
+        int: 1123
+        float: 221.5
+        string: value_of_env-overridden
+        template: "{{ .Release.Name }}-overridden-value"
+    asserts:
+      - equal:
+          path: envVars
+          value:
+            env:
+            - name: float
+              value: "1.5"
+            - name: int
+              value: "1"
+            - name: string
+              value: value_of_env
+            - name: template
+              value: RELEASE-NAME-unit-test
+
+  - it: should fail with required error message if passed int for env var name
+    set:
+      env:
+        - 1:
+            value: a
+    asserts:
+      - failedTemplate:
+          errorMessage: environment variables as a list of maps require a name field
+
+  - it: should use the .value key when value is a mapping kind
+    set:
+      env:
+        unitTestEnvVar:
+          value: valAValue
+    asserts:
+      - equal:
+          path: envVars
+          value:
+            env:
+              - name: unitTestEnvVar
+                value: valAValue
+
+  - it: should handle an explicit ValueFrom when value is a mapping kind
+    set:
+      env:
+        unitTestEnvVar:
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+    asserts:
+      - equal:
+          path: envVars
+          value:
+            env:
+              - name: unitTestEnvVar
+                valueFrom:
+                  fieldRef:
+                    fieldPath: spec.nodeName
+
+  - it: should handle an implicit ValueFrom when value is a mapping kind
+    set:
+      env:
+        unitTestEnvVar:
+          fieldRef:
+            fieldPath: spec.nodeName
+    asserts:
+      - equal:
+          path: envVars
+          value:
+            env:
+              - name: unitTestEnvVar
+                valueFrom:
+                  fieldRef:
+                    fieldPath: spec.nodeName
+
+  - it: should use a string value directly when it is a string kind
+    set:
+      env:
+        unitTestEnvVar: "unit-test string value"
+    asserts:
+      - equal:
+          path: envVars
+          value:
+            env:
+              - name: unitTestEnvVar
+                value: "unit-test string value"
+
+  - it: should handle templated values when the raw value is a string kind
+    set:
+      env:
+        unitTestEnvVar: "{{ .Release.Name }}-unit-test"
+    asserts:
+      - equal:
+          path: envVars
+          value:
+            env:
+              - name: unitTestEnvVar
+                value: "RELEASE-NAME-unit-test"
+
+  - it: should convert float64 values to a string
+    set:
+      env:
+        unitTestEnvVar: 1234.5678
+    asserts:
+      - equal:
+          path: envVars
+          value:
+            env:
+              - name: unitTestEnvVar
+                value: "1234.5678"
+
+  - it: should convert bool values to a string
+    set:
+      env:
+        unitTestEnvVar: false
+    asserts:
+      - equal:
+          path: envVars
+          value:
+            env:
+              - name: unitTestEnvVar
+                value: "false"
+
+  - it: should use the raw value if not a map, string, float64 or bool kind
+    set:
+      env:
+        unitTestEnvVar:
+          - valueA: 1
+          - valueB: 2
+          - valueC: 3
+    asserts:
+      - equal:
+          path: envVars
+          value:
+            env:
+              - name: unitTestEnvVar
+                value:
+                  - valueA: 1
+                  - valueB: 2
+                  - valueC: 3

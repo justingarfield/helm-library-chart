@@ -1,0 +1,4 @@
+metadata:
+  name: unit-test-fixture
+selectorLabels:
+  {{- include "helmLibraryChart.labels.selectorLabels" . | nindent 2 }}

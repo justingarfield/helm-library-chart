@@ -1,0 +1,23 @@
+---
+version: '3'
+
+tasks:
+  all:
+    desc: run 'helm unittest' on all test charts
+    cmds:
+    - task: unit-tests
+    - task: integration-tests
+
+  unit:
+    desc: run 'helm unittest' on the unit tests chart
+    dir: "{{.GIT_ROOT}}/tests/unit-tests"
+    cmds:
+    - helm dependency update
+    - helm unittest --helm3 --strict .
+
+  integration:
+    desc: run 'helm unittest' on the integration tests chart
+    dir: "{{.GIT_ROOT}}/tests/integration-tests"
+    cmds:
+    - helm dependency update
+    - helm unittest --helm3 --strict .

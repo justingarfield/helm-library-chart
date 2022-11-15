@@ -1,0 +1,21 @@
+suite: "chart -> annotations"
+templates:
+  - lib/chart/annotations.yaml
+tests:
+  - it: should render nothing by default
+    asserts:
+      - isNull:
+          path: annotations
+
+  - it: should render global annotations when defined
+    set:
+      global:
+        annotations:
+          helm-library-chart-unit-tests/global-value1: "global-abc123"
+          helm-library-chart-unit-tests/global-value2: "global-xyz987"
+    asserts:
+      - equal:
+          path: annotations
+          value:
+            helm-library-chart-unit-tests/global-value1: "global-abc123"
+            helm-library-chart-unit-tests/global-value2: "global-xyz987"

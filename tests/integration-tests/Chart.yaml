@@ -1,0 +1,9 @@
+apiVersion: v2
+name: helm-library-chart-integration-tests
+description: Chart to test integration of components from the helm-library-chart library chart.
+version: 0.1.1
+dependencies:
+- name: helm-library-chart
+  repository: file://../../
+  version: 0.1.0
+icon: https://helm.sh/img/helm.svg

@@ -1,0 +1,60 @@
+suite: "chart -> names -> fullName"
+templates:
+  - lib/chart/names-fullName.yaml
+tests:
+  - it: should return the Release Name and Chart Name separated by a '-' by default
+    asserts:
+      - equal:
+          path: fullName
+          value: RELEASE-NAME-helm-library-chart-unit-tests
+
+  - it: should return the value of a global fullnameOverride if supplied
+    set:
+      global:
+        fullnameOverride: globalFullnameOverride
+    asserts:
+      - equal:
+          path: fullName
+          value: globalFullnameOverride
+
+  - it: should return the value of fullnameOverride if supplied
+    set:
+      fullnameOverride: fullnameOverride
+    asserts:
+      - equal:
+          path: fullName
+          value: fullnameOverride
+
+  - it: should return the value of a global fullnameOverride if supplied along with fullnameOverride
+    set:
+      fullnameOverride: fullnameOverride
+      global:
+        fullnameOverride: globalFullnameOverride
+    asserts:
+      - equal:
+          path: fullName
+          value: globalFullnameOverride
+
+  - it: should return just the Release Name if it contains the chart name
+    release:
+      name: helm-library-chart-unit-tests
+    asserts:
+      - equal:
+          path: fullName
+          value: helm-library-chart-unit-tests
+
+  - it: should truncate the return value to 63 characters
+    set:
+      fullnameOverride: 1234567980_abcdefghijklmnopqrstuvwxyz_1234567980_abcdefghijklmnopqrstuvwxyz
+    asserts:
+      - equal:
+          path: fullName
+          value: 1234567980_abcdefghijklmnopqrstuvwxyz_1234567980_abcdefghijklmn
+
+  - it: should trim the first occurence of a '-' suffix from the return value
+    set:
+      fullnameOverride: unitTestNameWithHyphenSuffix-
+    asserts:
+      - equal:
+          path: fullName
+          value: unitTestNameWithHyphenSuffix

@@ -1,0 +1,17 @@
+---
+version: '3'
+
+vars:
+  GIT_ROOT:
+    sh: git rev-parse --show-toplevel
+
+includes:
+  lint: .ci/task/Taskfile_linting.yaml
+  test: .ci/task/Taskfile_testing.yaml
+  watch: .ci/task/Taskfile_watch.yaml
+
+tasks:
+  default:
+    cmds:
+    - task --list-all
+    silent: true

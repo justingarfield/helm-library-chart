@@ -1,0 +1,258 @@
+suite: controller -> ports
+templates:
+  - lib/controller/ports.yaml
+tests:
+  - it: should render nothing when main service is disabled
+    set:
+      service:
+        main:
+          enabled: false
+    asserts:
+      - isNull:
+          path: ports
+
+  - it: should render main service with null containerPort by default
+    asserts:
+      - equal:
+          path: ports
+          value:
+            - containerPort: null
+              name: http
+              protocol: TCP
+
+  - it: should use the key as the port's name
+    set:
+      service:
+        main:
+          ports:
+            http:
+              enabled: false
+            thisShouldBeThePortName:
+              enabled: true
+    asserts:
+      - equal:
+          path: ports
+          value:
+            - containerPort: null
+              name: thisShouldBeThePortName
+              protocol: TCP
+
+  - it: should throw an error if attempting to used a named targetPort
+    set:
+      service:
+        main:
+          ports:
+            http:
+              targetPort: "aNamedTargetPort"
+    asserts:
+      - failedTemplate:
+          errorMessage: These charts do not support named ports for targetPort. (port name http, targetPort aNamedTargetPort)
+
+  - it: should default containerPort to the provided port value if targetPort is not provided
+    set:
+      service:
+        main:
+          ports:
+            http:
+              port: 4444
+              targetPort:
+    asserts:
+      - equal:
+          path: ports
+          value:
+            - containerPort: 4444
+              name: http
+              protocol: TCP
+
+  - it: should use targetPort value for containerPort when provided
+    set:
+      service:
+        main:
+          ports:
+            http:
+              port:
+              targetPort: 5555
+    asserts:
+      - equal:
+          path: ports
+          value:
+            - containerPort: 5555
+              name: http
+              protocol: TCP
+
+  - it: should use targetPort value instead of port value for containerPort when both are provided
+    set:
+      service:
+        main:
+          ports:
+            http:
+              port: 4444
+              targetPort: 5555
+    asserts:
+      - equal:
+          path: ports
+          value:
+            - containerPort: 5555
+              name: http
+              protocol: TCP
+
+  - it: should default to TCP protocol if none provided
+    set:
+      service:
+        main:
+          ports:
+            http:
+              protocol:
+    asserts:
+      - equal:
+          path: ports
+          value:
+            - containerPort: null
+              name: http
+              protocol: TCP
+
+  - it: should render TCP protocol when HTTP is provided
+    set:
+      service:
+        main:
+          ports:
+            http:
+              protocol: HTTP
+    asserts:
+      - equal:
+          path: ports
+          value:
+            - containerPort: null
+              name: http
+              protocol: TCP
+
+  - it: should render TCP protocol when HTTPS is provided
+    set:
+      service:
+        main:
+          ports:
+            http:
+              protocol: HTTPS
+    asserts:
+      - equal:
+          path: ports
+          value:
+            - containerPort: null
+              name: http
+              protocol: TCP
+
+  # Note: This test appears to surface a redundancy since it'll be TCP anyway with nothing provided
+  - it: should render TCP protocol when TCP is provided
+    set:
+      service:
+        main:
+          ports:
+            http:
+              protocol: TCP
+    asserts:
+      - equal:
+          path: ports
+          value:
+            - containerPort: null
+              name: http
+              protocol: TCP
+
+  - it: should render the raw protocol value when it is not HTTP, HTTPS, or TCP
+    set:
+      service:
+        main:
+          ports:
+            http:
+              protocol: QUIC
+    asserts:
+      - equal:
+          path: ports
+          value:
+            - containerPort: null
+              name: http
+              protocol: QUIC
+
+  - it: should render only enabled services
+    set:
+      service:
+        main:
+          enabled: false
+        serviceA:
+          enabled: true
+          type: ClusterIP
+          ports:
+            serviceAPort:
+              enabled: true
+              port: 6881
+              protocol: TCP
+              targetPort: 6881
+        serviceB:
+          enabled: false
+          type: ClusterIP
+          ports:
+            serviceBPort:
+              enabled: true
+              port: 6881
+              protocol: TCP
+              targetPort: 6881
+        serviceC:
+          enabled: true
+          type: ClusterIP
+          ports:
+            serviceCPort:
+              enabled: true
+              port: 6881
+              protocol: TCP
+              targetPort: 6881
+    asserts:
+      - equal:
+          path: ports
+          value:
+            - containerPort: 6881
+              name: serviceAPort
+              protocol: TCP
+            - containerPort: 6881
+              name: serviceCPort
+              protocol: TCP
+
+  - it: should render only enabled ports
+    set:
+      service:
+        main:
+          ports:
+            http:
+              enabled: false
+        serviceA:
+          enabled: true
+          type: ClusterIP
+          ports:
+            serviceAPort:
+              enabled: false
+              port: 6881
+              protocol: TCP
+              targetPort: 6881
+        serviceB:
+          enabled: true
+          type: ClusterIP
+          ports:
+            serviceBPort:
+              enabled: true
+              port: 6881
+              protocol: TCP
+              targetPort: 6881
+        serviceC:
+          enabled: true
+          type: ClusterIP
+          ports:
+            serviceCPort:
+              enabled: false
+              port: 6881
+              protocol: TCP
+              targetPort: 6881
+    asserts:
+      - equal:
+          path: ports
+          value:
+            - containerPort: 6881
+              name: serviceBPort
+              protocol: TCP

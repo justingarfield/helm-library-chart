@@ -1,0 +1,4 @@
+suite: "sidecar -> vpn -> wireguard -> container"
+templates:
+  - sidecars/vpn/wireguard/container.yaml
+tests:

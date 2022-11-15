@@ -1,0 +1,4 @@
+suite: controller -> volumes
+templates:
+  - controller-volumes.yaml
+tests:

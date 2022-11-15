@@ -1,0 +1,11 @@
+metadata:
+  name: unit-test-fixture
+envVars:
+  # TODO: Look at this some more, not really satisfied with this solution
+  {{- if (hasKey .Values "UnitTestObjectValues") }}
+    {{- $_ := set $ "ObjectValues" (dict "env" $.Values.UnitTestObjectValues.env) -}}
+      {{- include "helmLibraryChart.controller.env_vars" $ | nindent 2 -}}
+    {{- $_ := unset $.ObjectValues "env" -}}
+  {{- else }}
+    {{- include "helmLibraryChart.controller.env_vars" $ | nindent 2 -}}
+  {{- end }}

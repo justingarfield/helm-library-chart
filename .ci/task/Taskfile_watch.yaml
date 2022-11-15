@@ -1,0 +1,10 @@
+---
+version: '3'
+
+tasks:
+  unit-tests:
+    desc: run 'watch helm unittest' on the unit tests chart
+    dir: "{{.GIT_ROOT}}/tests/unit-tests"
+    cmds:
+    - helm dependency update
+    - watch --interval 5 helm unittest --helm3 --strict .

@@ -1,0 +1,41 @@
+suite: "chart -> pod annotations"
+templates:
+  - lib/chart/annotations-pod.yaml
+tests:
+  - it: should render nothing by default
+    asserts:
+      - isNull:
+          path: annotations
+
+  - it: should render pod-level annotations when defined
+    set:
+      podAnnotations:
+        helm-library-chart-unit-tests/global-value1: "global-abc123"
+        helm-library-chart-unit-tests/global-value2: "global-xyz987"
+    asserts:
+      - equal:
+          path: annotations
+          value:
+            helm-library-chart-unit-tests/global-value1: "global-abc123"
+            helm-library-chart-unit-tests/global-value2: "global-xyz987"
+
+  - it: should render SHA256 checksum of enabled configMaps as 'checksum/config' annotation
+    set:
+      configMaps:
+        configMap1:
+          enabled: true
+          data:
+            value: value1
+        configMap2:
+          enabled: false
+          data:
+            value: value2
+        configMap3:
+          enabled: true
+          data:
+            value: value3
+    asserts:
+      - equal:
+          path: annotations
+          value:
+            checksum/config: "6024993501314a8aab25b8cf9b50d05ab5c32fd3cc9907b371427e7ee6fe39ca"

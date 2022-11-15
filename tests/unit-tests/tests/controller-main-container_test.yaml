@@ -1,0 +1,352 @@
+suite: controller -> container
+templates:
+  - lib/controller/main-container.yaml
+tests:
+  - it: defaults to fullName (<release name>-<chart-name>) for the container name
+    asserts:
+      - equal:
+          path: containers[0].name
+          value: RELEASE-NAME-helm-library-chart-unit-tests
+
+  - it: defaults to <repository>:<app version> for the container image
+    chart:
+      appVersion: 1.0.0
+    set:
+      image:
+        repository: "unit-test-repository"
+    asserts:
+      - equal:
+          path: containers[0].image
+          value: unit-test-repository:1.0.0
+
+  - it: should use image.tag value when provided for container image
+    set:
+      image:
+        repository: "unit-test-repository"
+        tag: "unit-test-tag"
+    asserts:
+      - equal:
+          path: containers[0].image
+          value: unit-test-repository:unit-test-tag
+
+  - it: should use image.tag value when provided along with chart AppVersion for container image
+    chart:
+      appVersion: 1.0.0
+    set:
+      image:
+        repository: "unit-test-repository"
+        tag: "unit-test-tag"
+    asserts:
+      - equal:
+          path: containers[0].image
+          value: unit-test-repository:unit-test-tag
+
+  # TODO: Still trying to determine if this can be tested properly and/or if "| quote" should even be used here.
+  #       Observed that using all numbers results in value of: +'%!s(float64=123):%!s(float64=456)'
+  - it: should quote the contents of the container image
+
+  - it: should use the image.pullPolicy value for imagePullPolicy
+    set:
+      image:
+        pullPolicy: "unit-test-pull-policy"
+    asserts:
+      - equal:
+          path: containers[0].imagePullPolicy
+          value: unit-test-pull-policy
+
+  - it: should not have a command property by default
+    asserts:
+      - isNull:
+          path: containers[0].command
+
+  - it: should have a command property when provided
+    set:
+      command: "unit-test-command"
+    asserts:
+      - isNotNull:
+          path: containers[0].command
+
+  - it: should allow string values for the command property
+    set:
+      command: "unit-test-command"
+    asserts:
+      - equal:
+          path: containers[0].command
+          value:
+            - unit-test-command
+
+  - it: should allow multi-line values for the command property
+    set:
+      command:
+        - node
+        - server.js
+    asserts:
+      - equal:
+          path: containers[0].command
+          value:
+            - node
+            - server.js
+
+  - it: should not have an args property by default
+    asserts:
+      - isNull:
+          path: containers[0].args
+
+  - it: should have a args property when provided
+    set:
+      args: "--config unit-test-config.yaml"
+    asserts:
+      - isNotNull:
+          path: containers[0].args
+
+  - it: should allow string values for the args property
+    set:
+      args: "--config unit-test-config.yaml"
+    asserts:
+      - equal:
+          path: containers[0].args
+          value:
+            - --config unit-test-config.yaml
+
+  - it: should allow multi-line values for the args property
+    set:
+      args:
+        - --config
+        - unit-test-config.yaml
+    asserts:
+      - equal:
+          path: containers[0].args
+          value:
+            - --config
+            - unit-test-config.yaml
+
+  - it: should not have a securityContext property by default
+    asserts:
+      - isNull:
+          path: containers[0].securityContext
+
+  - it: should have a securityContext property when provided
+    set:
+      securityContext:
+        privileged: true
+    asserts:
+      - isNotNull:
+          path: containers[0].securityContext
+
+  - it: should match the provided securityContext
+    set:
+      securityContext:
+        privileged: true
+        capabilities:
+          add:
+            - NET_ADMIN
+            - SYS_MODULE
+    asserts:
+      - equal:
+          path: containers[0].securityContext
+          value:
+            privileged: true
+            capabilities:
+              add:
+                - NET_ADMIN
+                - SYS_MODULE
+
+  - it: should not have a lifecycle property by default
+    asserts:
+      - isNull:
+          path: containers[0].lifecycle
+
+  - it: should have a lifecycle property when provided
+    set:
+      lifecycle:
+        postStart:
+          exec:
+            command:
+            - sleep 30
+    asserts:
+      - isNotNull:
+          path: containers[0].lifecycle
+
+  - it: should match the provided lifecycle
+    set:
+      lifecycle:
+        postStart:
+          exec:
+            command:
+            - sh
+            - -c
+            - sleep 30 && echo "Hello Unit Tests!"
+    asserts:
+      - equal:
+          path: containers[0].lifecycle
+          value:
+            postStart:
+              exec:
+                command:
+                - sh
+                - -c
+                - sleep 30 && echo "Hello Unit Tests!"
+
+  - it: should not have a terminationMessagePath property by default
+    asserts:
+      - isNull:
+          path: containers[0].terminationMessagePath
+
+  - it: should have a terminationMessagePath property when provided
+    set:
+      termination:
+        messagePath: /var/log/unit-test.log
+    asserts:
+      - isNotNull:
+          path: containers[0].terminationMessagePath
+
+  - it: should match the provided terminationMessagePath
+    set:
+      termination:
+        messagePath: /var/log/unit-test.log
+    asserts:
+      - equal:
+          path: containers[0].terminationMessagePath
+          value: /var/log/unit-test.log
+
+  - it: should not have a terminationMessagePolicy property by default
+    asserts:
+      - isNull:
+          path: containers[0].terminationMessagePolicy
+
+  - it: should have a terminationMessagePolicy property when provided
+    set:
+      termination:
+        messagePolicy: FallbackToLogsOnError
+    asserts:
+      - isNotNull:
+          path: containers[0].terminationMessagePolicy
+
+  - it: should match the provided terminationMessagePolicy
+    set:
+      termination:
+        messagePolicy: FallbackToLogsOnError
+    asserts:
+      - equal:
+          path: containers[0].terminationMessagePolicy
+          value: FallbackToLogsOnError
+
+  - it: should not render any environment variables by default
+    asserts:
+      - isNull:
+          path: containers[0].env
+
+  - it: should render any environment variables provided
+    set:
+      env:
+        envVarA: valueA
+        envVarB: valueB
+    asserts:
+      - equal:
+          path: containers[0].env
+          value:
+            - name: envVarA
+              value: valueA
+            - name: envVarB
+              value: valueB
+
+  - it: should not render envFrom by default
+    asserts:
+      - isNull:
+          path: containers[0].envFrom
+
+  - it: should render envFrom when provided envFrom value
+    set:
+      envFrom:
+      - configMapRef:
+          name: special-config
+    asserts:
+      - equal:
+          path: containers[0].envFrom
+          value:
+            - configMapRef:
+                name: special-config
+
+  - it: should render envFrom when provided a secret value
+    set:
+      secret:
+        PASSWORD: my-password
+    asserts:
+      - equal:
+          path: containers[0].envFrom
+          value:
+            - secretRef:
+                name: RELEASE-NAME-helm-library-chart-unit-tests
+
+  - it: should render envFrom when provided a secret value
+    set:
+      secret:
+        PASSWORD: my-password
+    asserts:
+      - equal:
+          path: containers[0].envFrom
+          value:
+            - secretRef:
+                name: RELEASE-NAME-helm-library-chart-unit-tests
+
+  - it: should always render something for ports
+    asserts:
+      - isNotNull:
+          path: containers[0].ports
+
+  - it: should not render volumeMounts by default
+    asserts:
+      - isNull:
+          path: containers[0].volumeMounts
+
+  - it: should render volumeMounts when provided
+    set:
+      persistence:
+        config:
+          enabled: true
+    asserts:
+      - isNotEmpty:
+          path: containers[0].volumeMounts
+
+  - it: should render liveness, readiness, and startup probes by default
+    asserts:
+      - isNotEmpty:
+          path: containers[0].livenessProbe
+      - isNotEmpty:
+          path: containers[0].readinessProbe
+      - isNotEmpty:
+          path: containers[0].startupProbe
+
+  - it: should not have a resources property by default
+    asserts:
+      - isNull:
+          path: containers[0].resources
+
+  - it: should have a resources property when provided
+    set:
+      resources:
+        limits:
+          cpu: 100m
+    asserts:
+      - isNotNull:
+          path: containers[0].resources
+
+  - it: should match the provided resources
+    set:
+      resources:
+        limits:
+          cpu: 100m
+          memory: 128Mi
+        requests:
+          cpu: 100m
+          memory: 128Mi
+    asserts:
+      - equal:
+          path: containers[0].resources
+          value:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi

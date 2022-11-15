@@ -1,0 +1,43 @@
+suite: "chart -> labels -> default"
+templates:
+  - lib/chart/labels-default.yaml
+tests:
+  - it: should render the default labels and selectorLabels
+    asserts:
+      - equal:
+          path: labels
+          value:
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/managed-by: Helm
+            app.kubernetes.io/name: helm-library-chart-unit-tests
+            helm.sh/chart: helm-library-chart-unit-tests-0.1.0
+
+  - it: should render the expected 'app.kubernetes.io/version' label when an AppVersion is provided
+    chart:
+      appVersion: "1.0.0"
+    asserts:
+      - equal:
+          path: labels
+          value:
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/managed-by: Helm
+            app.kubernetes.io/name: helm-library-chart-unit-tests
+            app.kubernetes.io/version: "1.0.0"
+            helm.sh/chart: helm-library-chart-unit-tests-0.1.0
+
+  - it: should render global labels when provided
+    set:
+      global:
+        labels:
+            helm-library-chart-unit-tests/global-value1: "global-abc123"
+            helm-library-chart-unit-tests/global-value2: "global-xyz987"
+    asserts:
+      - equal:
+          path: labels
+          value:
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/managed-by: Helm
+            app.kubernetes.io/name: helm-library-chart-unit-tests
+            helm-library-chart-unit-tests/global-value1: global-abc123
+            helm-library-chart-unit-tests/global-value2: global-xyz987
+            helm.sh/chart: helm-library-chart-unit-tests-0.1.0

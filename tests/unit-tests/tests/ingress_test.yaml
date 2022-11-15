@@ -1,0 +1,4 @@
+suite: ingress
+templates:
+  - ingress.yaml
+tests:
