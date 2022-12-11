@@ -26,8 +26,8 @@ All Unit Test templates contain metadata.name to appease the helm linter.
 
 Notes to help me keep my sanity as to where the unit tests stand...
 
-| File                                 | Status           | Notes                                       |
-|-|-|
+| File                                 | Status           | Notes                                                     |
+|-|-|-|
 | `lib/chart/_annotations.tpl`         | Full Coverage    | |
 | `lib/chart/_capabilities.tpl`        | Full Coverage    | |
 | `lib/chart/_labels.tpl`              | Full Coverage    | |
