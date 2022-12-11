@@ -2,5 +2,20 @@ suite: services
 templates:
   - services.yaml
 tests:
-  - it: should render
+  - it: should render main service by default
     asserts:
+      - equal:
+          path: services
+          value: main
+
+  - it: should render main service by default
+    set:
+      service:
+        main:
+          enabled: false
+        anotherService:
+          enabled: true
+    asserts:
+      - equal:
+          path: services
+          value: anotherService

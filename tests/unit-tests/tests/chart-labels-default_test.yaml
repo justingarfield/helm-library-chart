@@ -41,3 +41,18 @@ tests:
             helm-library-chart-unit-tests/global-value1: global-abc123
             helm-library-chart-unit-tests/global-value2: global-xyz987
             helm.sh/chart: helm-library-chart-unit-tests-0.1.0
+
+  - it: should render templated values
+    set:
+      global:
+        labels:
+            helm-library-chart-unit-tests/global-value1: "global-{{ .Release.Name }}"
+    asserts:
+      - equal:
+          path: labels
+          value:
+            app.kubernetes.io/instance: RELEASE-NAME
+            app.kubernetes.io/managed-by: Helm
+            app.kubernetes.io/name: helm-library-chart-unit-tests
+            helm-library-chart-unit-tests/global-value1: global-RELEASE-NAME
+            helm.sh/chart: helm-library-chart-unit-tests-0.1.0

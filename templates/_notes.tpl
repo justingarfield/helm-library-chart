@@ -4,10 +4,10 @@ Default NOTES.txt content.
 {{- define "helmLibraryChart.notes.defaultNotes" -}}
 
 {{- $primaryIngress := get .Values.ingress (include "helmLibraryChart.ingress.primary" .) -}}
-{{- $primaryService := get .Values.service (include "helmLibraryChart.service.primary" .) -}}
+{{- $primaryService := get .Values.service (include "helmLibraryChart.services.primary" .) -}}
 {{- $primaryPort := "" -}}
 {{- if $primaryService -}}
-  {{- $primaryPort = get $primaryService.ports (include "helmLibraryChart.service.ports.primary" (dict "serviceName" (include "helmLibraryChart.service.primary" .) "values" $primaryService)) -}}
+  {{- $primaryPort = get $primaryService.ports (include "helmLibraryChart.service.ports.primary" (dict "serviceName" (include "helmLibraryChart.services.primary" .) "values" $primaryService)) -}}
 {{- end -}}
 
 {{- $prefix := "http" -}}

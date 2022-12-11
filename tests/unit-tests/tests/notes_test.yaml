@@ -1,4 +1,6 @@
 suite: notes
 templates:
-  - notes.yaml
+  - NOTES.txt
 tests:
+  - it: should
+    asserts:

@@ -1,6 +1,6 @@
 suite: service -> primary
 templates:
-  - services.yaml
+  - services-primary.yaml
 tests:
   - it: should render the main service by default
     asserts:

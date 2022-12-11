@@ -2,10 +2,10 @@
 Probes selection logic.
 */}}
 {{- define "helmLibraryChart.controller.probes" -}}
-{{- $primaryService := get .Values.service (include "helmLibraryChart.service.primary" .) -}}
+{{- $primaryService := get .Values.service (include "helmLibraryChart.services.primary" .) -}}
 {{- $primaryPort := "" -}}
 {{- if $primaryService -}}
-  {{- $primaryPort = get $primaryService.ports (include "helmLibraryChart.service.ports.primary" (dict "serviceName" (include "helmLibraryChart.service.primary" .) "values" $primaryService)) -}}
+  {{- $primaryPort = get $primaryService.ports (include "helmLibraryChart.service.ports.primary" (dict "serviceName" (include "helmLibraryChart.services.primary" .) "values" $primaryService)) -}}
 {{- end -}}
 
 {{- range $probeName, $probe := .Values.probes }}

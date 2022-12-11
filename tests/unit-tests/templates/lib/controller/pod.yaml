@@ -1,4 +1,4 @@
 metadata:
   name: unit-test-fixture
 pod:
-{{- include "helmLibraryChart.controller.pod" . | nindent 2 }}
+  {{ include "helmLibraryChart.controller.pod" . | nindent 2 }}

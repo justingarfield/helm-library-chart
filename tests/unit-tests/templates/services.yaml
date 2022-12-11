@@ -1,4 +1,4 @@
 metadata:
   name: unit-test-fixture
-primaryService:
-  {{- include "helmLibraryChart.service.primary" . | nindent 2 }}
+services:
+  {{- include "helmLibraryChart.services" . | nindent 2 }}

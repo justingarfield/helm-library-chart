@@ -1,0 +1,6 @@
+{{- range $name, $service := .Values.service }}
+  {{- $serviceValues := $service -}}
+  {{- $_ := set $serviceValues "nameOverride" $name -}}
+  {{- $_ := set $ "ObjectValues" (dict "service" $serviceValues) -}}
+  {{- include "helmLibraryChart.service" $ }}
+{{- end }}

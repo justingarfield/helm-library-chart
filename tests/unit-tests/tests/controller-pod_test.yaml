@@ -283,13 +283,66 @@ tests:
             - name: ENV_VAR_A
               value: unit-test
 
-  #- it: should only render a single container by default
-  #  asserts:
-  #    - equal:
-  #        path: pod.containers
-  #        value:
+  - it: should only render the main container by default
+    asserts:
+      - equal:
+          path: pod.containers
+          value:
+            - image: '%!s(<nil>):'
+              imagePullPolicy: null
+              livenessProbe:
+                failureThreshold: 3
+                initialDelaySeconds: 0
+                periodSeconds: 10
+                tcpSocket:
+                  port: <nil>
+                timeoutSeconds: 1
+              name: RELEASE-NAME-helm-library-chart-unit-tests
+              ports:
+              - containerPort: null
+                name: http
+                protocol: TCP
+              readinessProbe:
+                failureThreshold: 3
+                initialDelaySeconds: 0
+                periodSeconds: 10
+                tcpSocket:
+                  port: <nil>
+                timeoutSeconds: 1
+              startupProbe:
+                failureThreshold: 30
+                initialDelaySeconds: 0
+                periodSeconds: 5
+                tcpSocket:
+                  port: <nil>
+                timeoutSeconds: 1
 
-  # TODO: volumes tests
+  - it: should render additionalContainers when provided
+    set:
+      additionalContainers:
+        unit-test-key-c:
+          name: custom-name-c
+          image: busybox
+    asserts:
+      - contains:
+          path: pod.containers
+          content:
+            image: busybox
+            name: custom-name-c
+
+  - it: should not render volumes by default
+    asserts:
+      - isNull:
+          path: pod.volumes
+
+  - it: should render volumes when any persistence is enabled
+    set:
+      persistence:
+        config:
+          enabled: true
+    asserts:
+      - isNotEmpty:
+          path: pod.volumes
 
   - it: should not render hostAliases when empty
     asserts:

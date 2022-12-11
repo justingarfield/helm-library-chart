@@ -15,6 +15,9 @@ within the common library.
   {{- $serviceName = printf "%v-%v" $serviceName $values.nameOverride -}}
 {{ end -}}
 {{- $svcType := $values.type | default "" -}}
+{{/*
+  This doesn't appear to work without being wrapped in services loop...default value from .Values.service above won't be an individual service
+*/}}
 {{- $primaryPort := get $values.ports (include "helmLibraryChart.service.ports.primary" (dict "values" $values)) }}
 ---
 apiVersion: v1

@@ -19,3 +19,14 @@ tests:
           value:
             helm-library-chart-unit-tests/global-value1: "global-abc123"
             helm-library-chart-unit-tests/global-value2: "global-xyz987"
+
+  - it: should render templated values
+    set:
+      global:
+        annotations:
+          helm-library-chart-unit-tests/global-value1: "global-{{ .Release.Name }}"
+    asserts:
+      - equal:
+          path: annotations
+          value:
+            helm-library-chart-unit-tests/global-value1: "global-RELEASE-NAME"

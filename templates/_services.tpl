@@ -8,7 +8,7 @@ Renders the Service objects required by the chart.
       {{- $serviceValues := $service -}}
 
       {{/* set the default nameOverride to the service name */}}
-      {{- if and (not $serviceValues.nameOverride) (ne $name (include "helmLibraryChart.service.primary" $)) -}}
+      {{- if and (not $serviceValues.nameOverride) (ne $name (include "helmLibraryChart.services.primary" $)) -}}
         {{- $_ := set $serviceValues "nameOverride" $name -}}
       {{ end -}}
 
@@ -21,7 +21,7 @@ Renders the Service objects required by the chart.
 {{/*
 Return the primary service object
 */}}
-{{- define "helmLibraryChart.service.primary" -}}
+{{- define "helmLibraryChart.services.primary" -}}
   {{- $enabledServices := dict -}}
   {{- range $serviceName := (keys .Values.service | sortAlpha) -}}
     {{- $service := (get $.Values.service $serviceName) -}}
