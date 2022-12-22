@@ -37,7 +37,7 @@ Notes to help me keep my sanity as to where the unit tests stand...
 | `lib/controller/_main-container.tpl` | Full Coverage    | |
 | `lib/controller/_pod.tpl`            | Full Coverage    | |
 | `lib/controller/_ports.tpl`          | Full Coverage    | |
-| `lib/controller/_probes.tpl`         | No Coverage      | |
+| `lib/controller/_probes.tpl`         | Partial Coverage | |
 | `lib/controller/_volume-mounts.tpl`  | No Coverage      | |
 | `lib/controller/_volumes.tpl`        | No Coverage      | |
 | `lib/_configmap.tpl`                 | Full Coverage    | |

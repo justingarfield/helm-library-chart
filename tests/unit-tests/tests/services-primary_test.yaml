@@ -1,4 +1,4 @@
-suite: service -> primary
+suite: services -> primary
 templates:
   - services-primary.yaml
 tests:
@@ -34,19 +34,3 @@ tests:
       - equal:
           path: primaryService
           value: yetAnotherService
-
-  - it: should pick the first enabled service (ordered by name) when none are specified as primary
-    set:
-      service:
-        main:
-          enabled: false
-        yetAnotherService:
-          enabled: true
-          primary: false
-        anotherService:
-          enabled: true
-          primary: false
-    asserts:
-      - equal:
-          path: primaryService
-          value: anotherService

@@ -3,4 +3,3 @@ templates:
   - NOTES.txt
 tests:
   - it: should
-    asserts:

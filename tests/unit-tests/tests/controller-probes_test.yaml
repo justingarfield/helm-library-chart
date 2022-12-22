@@ -2,5 +2,80 @@ suite: controller -> probes
 templates:
   - lib/controller/probes.yaml
 tests:
-  - it: should
+  - it: should render liveness, readiness, and startup probes by default
     asserts:
+      - equal:
+          path: probes
+          value:
+            livenessProbe:
+              failureThreshold: 3
+              initialDelaySeconds: 0
+              periodSeconds: 10
+              tcpSocket:
+                port: <nil>
+              timeoutSeconds: 1
+            readinessProbe:
+              failureThreshold: 3
+              initialDelaySeconds: 0
+              periodSeconds: 10
+              tcpSocket:
+                port: <nil>
+              timeoutSeconds: 1
+            startupProbe:
+              failureThreshold: 30
+              initialDelaySeconds: 0
+              periodSeconds: 5
+              tcpSocket:
+                port: <nil>
+              timeoutSeconds: 1
+
+  - it: should only render enabled probes
+    set:
+      probes:
+        liveness:
+          enabled: false
+        readiness:
+          enabled: false
+    asserts:
+      - equal:
+          path: probes
+          value:
+            startupProbe:
+              failureThreshold: 30
+              initialDelaySeconds: 0
+              periodSeconds: 5
+              tcpSocket:
+                port: <nil>
+              timeoutSeconds: 1
+
+  - it: should suffix each probe name with 'Probe'
+    set:
+      probes:
+        liveness:
+          enabled: false
+        readiness:
+          enabled: false
+    asserts:
+      - equal:
+          path: probes.startupProbe
+          value:
+            failureThreshold: 30
+            initialDelaySeconds: 0
+            periodSeconds: 5
+            tcpSocket:
+              port: <nil>
+            timeoutSeconds: 1
+
+  - it: should allow custom yaml for probe
+    set:
+      probes:
+        randomness:
+          enabled: true
+          custom: true
+          spec:
+            some-random-thing: true
+    asserts:
+      - equal:
+          path: probes.randomnessProbe
+          value:
+            some-random-thing: true
